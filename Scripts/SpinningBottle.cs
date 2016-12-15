@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class SpinningBottle : MonoBehaviour {
 
@@ -16,19 +18,30 @@ public class SpinningBottle : MonoBehaviour {
     bool shouldSpinn = false;
     public int rotateSpeed = 5;
     public GameObject playerTemplate;
+    public Sprite manImage;
+    PlayersManager playersManager;
+    List<Player> players;
+    public bool gameOver;
 
 
     Vector3 swipeDirection = Vector3.zero;
     void Start()
     {
+        gameOver = false;
         Vector3 center = transform.position;
-        PlayersManager playersManager = FindObjectOfType<PlayersManager>();
-        for (int i = 0; i < playersManager.GetPlayers().Count; i++)
+         playersManager = FindObjectOfType<PlayersManager>();
+         players = playersManager.GetPlayers();
+         for (int i = 0; i < players.Count; i++)
         {
-            int a = i * 360 / playersManager.GetPlayers().Count;
-            Vector3 pos = RandomCircle(center, 150.0f, a);
+            int a = i * 360 / players.Count;
+            Vector3 pos = RandomCircle(center, 175.0f, a);
             GameObject player = Instantiate(playerTemplate, pos, Quaternion.identity) as GameObject;
             player.transform.SetParent(transform.parent);
+            player.GetComponentInChildren<Text>().text = players[i].playerName;
+            if (players[i].sex == "man")
+            {
+                player.GetComponent<Image>().sprite = manImage;
+            }
         }
     }
 
@@ -42,22 +55,40 @@ public class SpinningBottle : MonoBehaviour {
         pos.z = center.z;
         return pos;
     }
-
+    int degreesToSpin;
+    int currentSpin = 0;
     // Update is called once per frame
     void Update()
     {
         if (shouldSpinn)
         {
-            if(currentSpinnTime < spinnBootleTime)
+            
+            
+            /*if(currentSpinnTime < spinnBootleTime)
             {
                 currentSpinnTime += Time.deltaTime;
                 spinningBottle.Rotate(swipeDirection * (spinnBootleTime - currentSpinnTime));
+            }*/
+            if (currentSpin < degreesToSpin)
+            {
+                int speed = rotateSpeed;
+                if (currentSpin != 0)
+                {
+                    Debug.Log("Current spin =" + currentSpin);
+                    Debug.Log("Current spin / 360 =" + currentSpin / 360);
+                    speed = rotateSpeed - currentSpin / 360;
+                    Debug.Log("ROTATE SPEED" + rotateSpeed);
+                }
+                currentSpin += speed;
+                spinningBottle.Rotate(swipeDirection, speed);
             }
             else
             {
                 Debug.Log("Koniec obracania!");
                 currentSpinnTime = 0f;
+                currentSpin = 0;
                 shouldSpinn = false;
+                gameOver = true;
             }
         }
         else
@@ -135,6 +166,14 @@ public class SpinningBottle : MonoBehaviour {
             }
             Debug.Log(spinnBootleTime);
             swipeTime = 0f;
+
+            //should be random chosing players in bootle;
+            degreesToSpin = (int)spinnBootleTime * 360 / playersManager.GetPlayers().Count * 10;
+            int randomizer = Random.Range(0, playersManager.GetPlayers().Count + 1);
+            degreesToSpin += randomizer * 360 / playersManager.GetPlayers().Count;
+            rotateSpeed = degreesToSpin / 360 + 2;
         }
     }
+
+
 }

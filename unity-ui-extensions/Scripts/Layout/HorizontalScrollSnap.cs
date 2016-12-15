@@ -47,7 +47,7 @@ namespace UnityEngine.UI.Extensions
         private int _currentScreen;
 
         [Tooltip("The screen / page to start the control on")]
-        public int StartingScreen = 1;
+        public int StartingScreen = 0;
 
         [Tooltip("The distance between two pages, by default 3 times the height of the control")]
         public int PageStep = 0;
@@ -57,6 +57,17 @@ namespace UnityEngine.UI.Extensions
             get
             {
                 return _currentScreen;
+            }
+        }
+
+        //my changes
+        private int _currentScreenForSwipeAnimation;
+
+        public int CurrentPageForAnimation
+        {
+            get
+            {
+                return _currentScreenForSwipeAnimation;
             }
         }
 
@@ -81,6 +92,7 @@ namespace UnityEngine.UI.Extensions
 
             _lerp = false;
             _currentScreen = StartingScreen;
+            _currentScreenForSwipeAnimation = _currentScreen;
 
             _scroll_rect.horizontalNormalizedPosition = (float)(_currentScreen - 1) / (_screens - 1);
 
@@ -125,6 +137,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentScreen < _screens - 1)
             {
                 _currentScreen++;
+                _currentScreenForSwipeAnimation++;
                 _lerp = true;
                 _lerp_target = _positions[_currentScreen];
 
@@ -138,6 +151,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentScreen > 0)
             {
                 _currentScreen--;
+                _currentScreenForSwipeAnimation--;
                 _lerp = true;
                 _lerp_target = _positions[_currentScreen];
 
@@ -205,12 +219,24 @@ namespace UnityEngine.UI.Extensions
         public int CurrentScreen()
         {
             var pos = FindClosestFrom(_screensContainer.localPosition, _positions);
+            _currentScreenForSwipeAnimation = GetPageforPosition(pos);
             return _currentScreen = GetPageforPosition(pos);
         }
 
         //changes the bullets on the bottom of the page - pagination
         private void ChangeBulletsInfo(int currentScreen)
         {
+            if(currentScreen == 0)
+            {
+                PrevButton.gameObject.SetActive(false);
+            }else if(currentScreen == _screens - 1)
+            {
+                NextButton.gameObject.SetActive(false);
+            }else
+            {
+                PrevButton.gameObject.SetActive(true);
+                NextButton.gameObject.SetActive(true);
+            }
             if (Pagination)
                 for (int i = 0; i < Pagination.transform.childCount; i++)
                 {
@@ -274,7 +300,7 @@ namespace UnityEngine.UI.Extensions
             }
             if (StartingScreen < 1)
             {
-                StartingScreen = 1;
+                StartingScreen = 0;
             }
         }
 
@@ -321,6 +347,7 @@ namespace UnityEngine.UI.Extensions
             if (_currentScreen > _screens - 1)
             {
                 _currentScreen = _screens - 1;
+                _currentScreenForSwipeAnimation = ~_currentScreen;
             }
 
             _scroll_rect.horizontalNormalizedPosition = (float)(_currentScreen) / (_screens - 1);
@@ -335,6 +362,7 @@ namespace UnityEngine.UI.Extensions
             _fastSwipeCounter = 0;
             _fastSwipeTimer = true;
             _currentScreen = CurrentScreen();
+            _currentScreenForSwipeAnimation = CurrentScreen();
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -357,10 +385,12 @@ namespace UnityEngine.UI.Extensions
                     {
                         if (_startPosition.x - _screensContainer.localPosition.x > 0)
                         {
+                            _currentScreenForSwipeAnimation = (_currentScreen + 1);
                             NextScreenCommand();
                         }
                         else
                         {
+                            _currentScreenForSwipeAnimation = (_currentScreen - 1);
                             PrevScreenCommand();
                         }
                     }
@@ -369,6 +399,7 @@ namespace UnityEngine.UI.Extensions
                         _lerp = true;
                         _lerp_target = FindClosestFrom(_screensContainer.localPosition, _positions);
                         _currentScreen = GetPageforPosition(_lerp_target);
+                        _currentScreenForSwipeAnimation = _currentScreen;
                     }
                 }
                 else
@@ -376,6 +407,7 @@ namespace UnityEngine.UI.Extensions
                     _lerp = true;
                     _lerp_target = FindClosestFrom(_screensContainer.localPosition, _positions);
                     _currentScreen = GetPageforPosition(_lerp_target);
+                    _currentScreenForSwipeAnimation = _currentScreen;
                 }
             }
         }

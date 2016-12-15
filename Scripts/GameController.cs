@@ -127,12 +127,12 @@ public class GameController : MonoBehaviour {
         Debug.Log("Player SIde" + playerSide);
         if(playerSide == "O")
         {
-            playerCross.greyOutPlayer();
-            playerCircle.colorPlayer();
+            playerCross.colorPlayer();
+            playerCircle.greyOutPlayer();
         }else
         {
-            playerCross.colorPlayer();
-            playerCircle.greyOutPlayer(); 
+            playerCross.greyOutPlayer();
+            playerCircle.colorPlayer();
         }
 
     }

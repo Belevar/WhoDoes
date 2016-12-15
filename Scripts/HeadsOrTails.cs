@@ -15,9 +15,11 @@ public class HeadsOrTails : MonoBehaviour {
     public Text secondPlayerName;
     public Image firstPlayerCoin;
     public Image secondPlayerCoin;
+    public int spinnSpeed;
+    public Sprite womanSprite;
     
     bool wasThrown = false;
-
+    bool isSpinning = false;
 
     private float length = 0;
     private bool SW = false;
@@ -39,22 +41,96 @@ public class HeadsOrTails : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         assignPlayers();
+        lastTransform = Mathf.Abs(transform.eulerAngles.y);
 	}
 
     bool coinSideWasChanged = true;
     bool  coinSideWasChanged2 = true;
     bool areHeads = false;
+
+    int degreesToSpin = 0;
+    int currentSpin = 0;
+    float lastTransform;
+
+
 	// Update is called once per frame
 	void Update () {
         if (wasThrown)
         {
-            if (currentSpinnTime < spinnBootleTime)
+            #region oldSwipe
+            /*if (currentSpinnTime < spinnBootleTime)
+                 {
+                     currentSpinnTime += Time.deltaTime;
+                     Debug.Log("ROTATION " + Mathf.Abs(transform.eulerAngles.y));
+                     if (Mathf.Abs(transform.eulerAngles.y) > 90 && Mathf.Abs(transform.eulerAngles.y) < 180)
+                     {
+
+                         if (coinSideWasChanged)
+                         {
+                             coinSideWasChanged = false;
+                             changeCoinSides();
+                         }
+                         coinSideWasChanged2 = true;
+                     }
+                     if (Mathf.Abs(transform.eulerAngles.y) > 270 && Mathf.Abs(transform.eulerAngles.y) < 360)
+                     {
+                         if (coinSideWasChanged2)
+                         {
+                             changeCoinSides();
+                             coinSideWasChanged2 = false;
+                         }
+                         coinSideWasChanged = true;
+                     }
+                     transform.Rotate(throwDirection,  (spinnBootleTime - currentSpinnTime));
+                 }
+                 else
+                 {
+                     Debug.Log("Koniec obracania!");
+                     currentSpinnTime = 0f;
+                     wasThrown = false;
+                 }*/
+            #endregion
+            #region newSwipe
+            
+            if(!isSpinning)
+            {
+                degreesToSpin = (int)spinnBootleTime * 180 * 3;
+                int randomizer = Random.Range(0, 2);
+                if (randomizer == 1)
+                {
+                    Debug.Log("Randomizer = 1");
+                    degreesToSpin += 180;
+                }
+                else
+                {
+                    Debug.Log("Randomizer = 0");
+                }
+                isSpinning = true;
+            }
+            
+            if (currentSpin < degreesToSpin)
             {
                 currentSpinnTime += Time.deltaTime;
-                Debug.Log("ROTATION " + Mathf.Abs(transform.eulerAngles.y));
+                //int speed = spinnSpeed - (int)currentSpinnTime;
+                //int speed = (int)(degreesToSpin / (1000 * currentSpinnTime));
+                //int speed = degreesToSpin / 360;
+               // speed = (int)(360 / 15 - currentSpinnTime);
+                //   Debug.Log("Spin time :" + speed);
+               // Debug.Log("Speed = " + speed);
+                //currentSpin += speed;
+                int speed = rotateSpeed;
+                if(currentSpin != 0)
+                {
+                    Debug.Log("Current spin =" + currentSpin);
+                    Debug.Log("Current spin / 360 =" +  currentSpin / 360);
+                    speed = rotateSpeed - currentSpin / 360;
+                    Debug.Log("ROTATE SPEED" + rotateSpeed);
+                }
+                currentSpin += speed;
+               // Debug.Log("Current spin time " + currentSpinnTime);
+               // Debug.Log("Current spin " + currentSpin);
                 if (Mathf.Abs(transform.eulerAngles.y) > 90 && Mathf.Abs(transform.eulerAngles.y) < 180)
                 {
-
                     if (coinSideWasChanged)
                     {
                         coinSideWasChanged = false;
@@ -71,15 +147,19 @@ public class HeadsOrTails : MonoBehaviour {
                     }
                     coinSideWasChanged = true;
                 }
-                transform.Rotate(throwDirection,  (spinnBootleTime - currentSpinnTime));
-                //transform.Rotate()
+
+                transform.Rotate(throwDirection, speed);
             }
             else
             {
                 Debug.Log("Koniec obracania!");
-                currentSpinnTime = 0f;
+                transform.rotation = new Quaternion(0, 0, 0, 0);
+                currentSpin = 0;
                 wasThrown = false;
+                isSpinning = false;
             }
+
+            #endregion
         }
         else
         {
@@ -112,6 +192,14 @@ public class HeadsOrTails : MonoBehaviour {
     void assignPlayers()
     {
         List<Player> players = FindObjectOfType<PlayersManager>().GetPlayers();
+        if(players[0].sex == "woman")
+        {
+            firstPlayerName.GetComponentInChildren<Image>().sprite = womanSprite;
+        }
+        if (players[1].sex == "woman")
+        {
+            secondPlayerName.GetComponentInChildren<Image>().sprite = womanSprite;
+        }
         firstPlayerName.text = players[0].playerName;
         secondPlayerName.text = players[1].playerName;
     }
@@ -125,10 +213,12 @@ public class HeadsOrTails : MonoBehaviour {
         if (startpos.y < endpos.y)
         {
             throwDirection = Vector3.up;
+            Debug.Log("SWIPE UP");
         }
         else
         {
             throwDirection = Vector3.down;
+            Debug.Log("SWIPE DOWN");
         }
         length = final.magnitude;
         spinnBootleTime = swipeTime * length;
@@ -136,7 +226,9 @@ public class HeadsOrTails : MonoBehaviour {
         {
             spinnBootleTime = 15;
         }
+        degreesToSpin = (int)spinnBootleTime * 180 * 3;
         Debug.Log(spinnBootleTime);
+        rotateSpeed = degreesToSpin / 360 + 2;
         swipeTime = 0f;
     }
 
@@ -167,9 +259,15 @@ public class HeadsOrTails : MonoBehaviour {
             startpos = Input.mousePosition;
             swipeTime += Time.deltaTime;
         }
-        if (Input.GetMouseButtonUp(0))
+        
+        if (Input.GetMouseButtonUp(0) && swipeTime > 0.25f)
         {
             ThrowCoin();
+        } else if(Input.GetMouseButtonUp(0))
+        {
+            Debug.Log("Swipe TIme: " + swipeTime);
+            swipeTime = 0f;
         }
+        
     }
 }

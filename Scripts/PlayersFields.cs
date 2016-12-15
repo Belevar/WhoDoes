@@ -41,7 +41,6 @@ public class PlayersFields : MonoBehaviour {
     public void AddNewPlayer(string playerName, string sex)
     {
         Transform button = addPlayerButton.transform;
-       // button.position = new Vector3(button.position.x, button.position.y - spaceBetweenFields, button.position.z);
         Transform lastPlayerField = playersPlaceholder.GetChild(playersPlaceholder.childCount - 1);
         Vector3 newFieldPosition = lastPlayerField.position;
         newFieldPosition.y -= spaceBetweenFields;
@@ -70,6 +69,15 @@ public class PlayersFields : MonoBehaviour {
         {
             Transform lastPlayerField = playersPlaceholder.GetChild(playersPlaceholder.childCount - 1);
             Destroy(lastPlayerField.gameObject);
+            addPlayerButton.SetActive(true);
+        }
+    }
+
+    public void DeletePlayer(int index)
+    {
+        if(playersPlaceholder.childCount > 2)
+        {
+            Destroy(playersPlaceholder.GetChild(index).gameObject);
             addPlayerButton.SetActive(true);
         }
     }
