@@ -66,6 +66,8 @@ public class Boombs : MonoBehaviour {
     void ShowLooser()
     {
         Debug.Log("Player - " + players[currentPlayer].playerName + " lost");
+        FindObjectOfType<GameResult>().setLooser(players[currentPlayer].playerName, players[currentPlayer].sex);
+        FindObjectOfType<LevelManager>().LoadScene("end_game");
     }
 
 

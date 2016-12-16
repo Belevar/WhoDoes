@@ -17,6 +17,7 @@ public class HeadsOrTails : MonoBehaviour {
     public Image secondPlayerCoin;
     public int spinnSpeed;
     public Sprite womanSprite;
+    public Button changeSidesButton;
     
     bool wasThrown = false;
     bool isSpinning = false;
@@ -106,6 +107,7 @@ public class HeadsOrTails : MonoBehaviour {
                     Debug.Log("Randomizer = 0");
                 }
                 isSpinning = true;
+                changeSidesButton.interactable = false;
             }
             
             if (currentSpin < degreesToSpin)
