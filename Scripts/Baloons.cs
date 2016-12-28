@@ -15,10 +15,10 @@ public class Baloons : MonoBehaviour {
     List<Player> players;
     List<int> playersPoints;
     bool turnInProgress;
+    bool nextPlayerTurn;
     int currentPlayer;
     public Transform baloonsPlaceholder;
 
-    int destroyedBaloons;
     float currentTurnTime = 0f;
     float turnTime;
 
@@ -27,6 +27,7 @@ public class Baloons : MonoBehaviour {
     {
         players = FindObjectOfType<PlayersManager>().GetPlayers();
         playersPoints = new List<int>();
+        nextPlayerTurn = true;
         for (int i = 0; i < players.Count; i++)
         {
             playersPoints.Add(0);
@@ -34,7 +35,6 @@ public class Baloons : MonoBehaviour {
         currentPlayer = 0;
         turnTime = 10.0f;
         turnInProgress = false;
-        destroyedBaloons = 0;
         manSprite = avatar.sprite;
         FillPlayerTemplate(players[currentPlayer]);
     }
@@ -42,7 +42,7 @@ public class Baloons : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (currentPlayer < players.Count)//turnHandler.ifThereIsNextPlayer())
+        if (currentPlayer < players.Count && nextPlayerTurn)
         {
             if (!turnInProgress)
             {
@@ -85,12 +85,21 @@ public class Baloons : MonoBehaviour {
 
     void EndTurn()
     {
-        destroyedBaloons = 0;
         currentTurnTime = 0f;
         currentPlayer++;
         FillPlayerTemplate(players[currentPlayer]);
         turnInProgress = false;
         CleanScene();
+        StartCoroutine(WaitBeforeNextPlayer());
+        timer.text = "Next Player";
+    }
+
+    IEnumerator WaitBeforeNextPlayer()
+    {
+        nextPlayerTurn = false;
+        Debug.Log("Before Waiting 2 seconds");
+        yield return new WaitForSeconds(2);
+        nextPlayerTurn = true;
     }
 
     void CleanScene()

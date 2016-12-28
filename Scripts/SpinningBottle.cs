@@ -65,8 +65,6 @@ public class SpinningBottle : MonoBehaviour {
     {
         if (shouldSpinn)
         {
-            
-            
             /*if(currentSpinnTime < spinnBootleTime)
             {
                 currentSpinnTime += Time.deltaTime;
@@ -90,7 +88,7 @@ public class SpinningBottle : MonoBehaviour {
                 currentSpin += speed;
                 spinningBottle.Rotate(swipeDirection, speed);
             }
-            else
+            else if(madeFirstCycle)
             {
                 Debug.Log("Koniec obracania!");
                 currentSpinnTime = 0f;
@@ -118,7 +116,9 @@ public class SpinningBottle : MonoBehaviour {
             var screenPoint = Camera.main.WorldToScreenPoint(transform.localPosition);
             var offset = new Vector2(mouse.x - screenPoint.x, mouse.y - screenPoint.y);
             var angle = Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg;
+            //var angle = Mathf.Atan2(mouse.y, mouse.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
+           // transform.rotation = new Quaternion(0, 0, transform.rotation.eulerAngles.z + 45,transform.rotation.w);
         }
         if (Input.GetMouseButtonUp(0))
         {

@@ -113,41 +113,29 @@ public class HeadsOrTails : MonoBehaviour {
             if (currentSpin < degreesToSpin)
             {
                 currentSpinnTime += Time.deltaTime;
-                //int speed = spinnSpeed - (int)currentSpinnTime;
-                //int speed = (int)(degreesToSpin / (1000 * currentSpinnTime));
-                //int speed = degreesToSpin / 360;
-               // speed = (int)(360 / 15 - currentSpinnTime);
-                //   Debug.Log("Spin time :" + speed);
-               // Debug.Log("Speed = " + speed);
-                //currentSpin += speed;
                 int speed = rotateSpeed;
                 if(currentSpin != 0)
                 {
                     Debug.Log("Current spin =" + currentSpin);
                     Debug.Log("Current spin / 360 =" +  currentSpin / 360);
-                    speed = rotateSpeed - currentSpin / 360;
+                    //speed = rotateSpeed - currentSpin / 360;
+                    speed = 1;
                     Debug.Log("ROTATE SPEED" + rotateSpeed);
                 }
                 currentSpin += speed;
-               // Debug.Log("Current spin time " + currentSpinnTime);
-               // Debug.Log("Current spin " + currentSpin);
-                if (Mathf.Abs(transform.eulerAngles.y) > 90 && Mathf.Abs(transform.eulerAngles.y) < 180)
+                
+                if(throwDirection == Vector3.up)
                 {
-                    if (coinSideWasChanged)
-                    {
-                        coinSideWasChanged = false;
-                        changeCoinSides();
-                    }
-                    coinSideWasChanged2 = true;
-                }
-                if (Mathf.Abs(transform.eulerAngles.y) > 270 && Mathf.Abs(transform.eulerAngles.y) < 360)
+                    Debug.Log("THROW RIGHT");
+                    throwToRightSide();
+                }else if(throwDirection == Vector3.down)
                 {
-                    if (coinSideWasChanged2)
-                    {
-                        changeCoinSides();
-                        coinSideWasChanged2 = false;
-                    }
-                    coinSideWasChanged = true;
+                    Debug.Log("THROW Left");
+                    throwToLeftSide();
+                } else
+                {
+
+                    Debug.LogError("NO THORW SIDE");
                 }
 
                 transform.Rotate(throwDirection, speed);
@@ -170,6 +158,54 @@ public class HeadsOrTails : MonoBehaviour {
 
 	}
 
+
+    void throwToRightSide()
+    {
+        if (Mathf.Abs(transform.eulerAngles.y) > 90 && Mathf.Abs(transform.eulerAngles.y) < 180)
+        {
+            Debug.Log("1: " + Mathf.Abs(transform.eulerAngles.y));
+            if (coinSideWasChanged)
+            {
+                coinSideWasChanged = false;
+                changeCoinSides();
+            }
+            coinSideWasChanged2 = true;
+        }
+        if (Mathf.Abs(transform.eulerAngles.y) > 270 && Mathf.Abs(transform.eulerAngles.y) < 360)
+        {
+            Debug.Log("2: " + Mathf.Abs(transform.eulerAngles.y));
+            if (coinSideWasChanged2)
+            {
+                changeCoinSides();
+                coinSideWasChanged2 = false;
+            }
+            coinSideWasChanged = true;
+        }
+    }
+
+    void throwToLeftSide()
+    {
+        if (Mathf.Abs(transform.eulerAngles.y) > 90 && Mathf.Abs(transform.eulerAngles.y) < 0)
+        {
+            Debug.Log("1: " + Mathf.Abs(transform.eulerAngles.y));
+            if (coinSideWasChanged)
+            {
+                coinSideWasChanged = false;
+                changeCoinSides();
+            }
+            coinSideWasChanged2 = true;
+        }
+        if (Mathf.Abs(transform.eulerAngles.y) < 270 && Mathf.Abs(transform.eulerAngles.y) > 180)
+        {
+            Debug.Log("2: " + Mathf.Abs(transform.eulerAngles.y));
+            if (coinSideWasChanged2)
+            {
+                changeCoinSides();
+                coinSideWasChanged2 = false;
+            }
+            coinSideWasChanged = true;
+        }
+    }
     void changeCoinSides()
     {
         if (areHeads)
