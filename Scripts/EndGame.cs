@@ -21,7 +21,7 @@ public class EndGame : MonoBehaviour {
 	
     void setEndText(string message, string playerName)
     {
-        string fullMess = playerName + message.Substring(message.IndexOf(' '));
+        string fullMess = playerName + '\n' + message.Substring(message.IndexOf(' ')).ToLower() ;
         text.text = fullMess;
     }
     

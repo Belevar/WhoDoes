@@ -9,7 +9,7 @@ public class PlayersFields : MonoBehaviour {
     public GameObject addPlayerButton;
     public Sprite womanSprite;
     public Transform playersPlaceholder;
-    public int spaceBetweenFields = 105;
+    public float spaceBetweenFields = 100;
 
     PlayersManager playersManager;
 
@@ -20,7 +20,8 @@ public class PlayersFields : MonoBehaviour {
         {
             Debug.LogError("PLAYERS MANAGER NOT FOUND!");
         }
-        
+        spaceBetweenFields = transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
+        Debug.Log("Start space " + spaceBetweenFields);
     }
 
     // Use this for initialization
@@ -35,15 +36,32 @@ public class PlayersFields : MonoBehaviour {
 
     public void AddNewPlayerFromButton()
     {
-        AddNewPlayer("", "");
+        GameObject newField = AddNewPlayer("", "");
+        newField.GetComponent<PlayerFieldTouchEvent>().moveNewPlayer();
     }
 
-    public void AddNewPlayer(string playerName, string sex)
+    public GameObject AddNewPlayer(string playerName, string sex)
     {
         Transform button = addPlayerButton.transform;
-        Transform lastPlayerField = playersPlaceholder.GetChild(playersPlaceholder.childCount - 1);
+        //Transform lastPlayerField = playersPlaceholder.GetChild(playersPlaceholder.childCount - 1);
+        //Vector3 newFieldPosition = lastPlayerField.position;
+
+        Transform lastPlayerField = playersPlaceholder.GetChild(0);
         Vector3 newFieldPosition = lastPlayerField.position;
-        newFieldPosition.y -= spaceBetweenFields;
+
+        float playersFieldOffset = transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
+        playersFieldOffset *= playersPlaceholder.childCount;
+
+        newFieldPosition.y -= playersFieldOffset;
+        //newFieldPosition.y -= transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
+        //newFieldPosition.y *= playersPlaceholder.childCount;
+       
+        //For swipe in animation if player is created from button;
+        if(playerName.Equals("") && sex.Equals(""))
+        {
+            newFieldPosition.x = -640 * 2;
+        }
+      
         GameObject newField = Instantiate(playerField, newFieldPosition, Quaternion.identity, playersPlaceholder) as GameObject;
         if (playerName.Equals(""))
         {
@@ -57,10 +75,14 @@ public class PlayersFields : MonoBehaviour {
             newField.GetComponentInChildren<SexButton>().SetSex(sex);
         }
 
+        newFieldPosition.x = 0;
+        Debug.Log("New pos before method" + newFieldPosition);
+       // newField.GetComponent<PlayerFieldTouchEvent>().moveNewPlayer();
         if (playersPlaceholder.childCount >= 6)
         {
             button.gameObject.SetActive(false);
         }
+        return newField;
     }
 
     public void DeletePlayer()
@@ -81,7 +103,15 @@ public class PlayersFields : MonoBehaviour {
             addPlayerButton.SetActive(true);
         }
     }
-    
+
+    public void DeletePlayer(Transform objectToDelete)
+    {
+        if (playersPlaceholder.childCount > 2)
+        {
+            Destroy(objectToDelete.transform.gameObject);
+            addPlayerButton.SetActive(true);
+        }
+    }
     
     void populatePlayersFields()
     {

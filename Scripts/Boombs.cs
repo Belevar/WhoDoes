@@ -7,20 +7,29 @@ public class Boombs : MonoBehaviour {
 
     public List<BombField> bombsFields;
     public Sprite womanSprite;
-    Sprite manSprite;
-    bool turnInProgress;
+    public Transform bombsFieldsHandler;
     public Image avatar;
     public Text PlayerName;
+
+
+    Sprite manSprite;
+    bool turnInProgress;
     int currentPlayer = 0;
     bool boombFound = false;
     List<Player> players;
-
+    
 
 	// Use this for initialization
 	void Start () {
         players = FindObjectOfType<PlayersManager>().GetPlayers();
         turnInProgress = false;
-        int bombPlace = Random.Range(0, 20);
+        bombsFields = new List<BombField>();
+        foreach (RectTransform bombField in bombsFieldsHandler)
+        {
+            bombsFields.Add(bombField.GetComponent<BombField>());
+        }
+        Debug.Log("Ilośc pól minowych" + bombsFields.Count);
+        int bombPlace = Random.Range(0, bombsFields.Count);
         bombsFields[bombPlace].hasBomb = true;
         Debug.Log("Bomb is under " + (bombPlace + 1));
         manSprite = avatar.sprite;
@@ -63,11 +72,20 @@ public class Boombs : MonoBehaviour {
         PlayerName.text = player.playerName;
     }
 
+    float timeOutBeforeEndGameScene = 1f;
+    float currentTime = 0f;
+
     void ShowLooser()
     {
         Debug.Log("Player - " + players[currentPlayer].playerName + " lost");
-        FindObjectOfType<GameResult>().setLooser(players[currentPlayer].playerName, players[currentPlayer].sex);
-        FindObjectOfType<LevelManager>().LoadScene("end_game");
+        
+        if(currentTime > timeOutBeforeEndGameScene)
+        {
+            FindObjectOfType<GameResult>().setLooser(players[currentPlayer].playerName, players[currentPlayer].sex);
+            FindObjectOfType<LevelManager>().LoadScene("end_game");
+        }
+        currentTime += Time.deltaTime;
+
     }
 
 

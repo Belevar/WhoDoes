@@ -24,6 +24,7 @@ public class GameResult : MonoBehaviour
         }
         else
         {
+            instance = this;
             scroll = FindObjectOfType<HorizontalScrollSnap>();
             looser = new Player();
             DontDestroyOnLoad(this);

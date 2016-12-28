@@ -18,8 +18,7 @@ public class PlayersManager : MonoBehaviour {
 
 	static PlayersManager instance = null;
     PlayersHanlder players = new PlayersHanlder();
-
-
+    
     void Awake()
     {
         if (instance != null)

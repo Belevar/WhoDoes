@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour {
     //enum FOR_WHAT_PLAYERS_PLAY { WALK_DOG, DISHES, LAUNDRY, VACUM ,CUSTOM}
     //FOR_WHAT_PLAYERS_PLAY gamePurpose;
 
+    public RectTransform test;
 
     GameResult gameResult;
 
@@ -22,6 +23,12 @@ public class LevelManager : MonoBehaviour {
 	void Update () {
 
 	}
+
+
+    public void testen()
+    {
+        test.rect.Set(0, 0,6, 7);
+    }
 
     public void LoadScene(string sceneName)
     {

@@ -8,6 +8,7 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
     float swipeStartX = 0.0f;
     float swipeEndX = 0.0f;
     public PlayersFields playersFields;
+    public float swipeOutPositionTrigger = 160;
 
     enum SwipeState { MOVE, NO_MOVEMENT, BACK_TO_ORGINAL_POS, MOVE_UP}
 
@@ -17,13 +18,19 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
     bool repositionPlayersFieldStarted = false;
     int index = -1;
 
-	// Use this for initialization
-	void Start () {
+    void Awake()
+    {
+        Debug.Log("DUUUPA");
         swipeState = SwipeState.NO_MOVEMENT;
-        if(playersFields == null)
+        if (playersFields == null)
         {
             playersFields = FindObjectOfType<PlayersFields>();
         }
+    }
+
+	// Use this for initialization
+	void Start () {
+        
 	}
 	
 	// Update is called once per frame
@@ -38,11 +45,12 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
                 {
                     transform.parent.GetChild(i).GetComponent<PlayerFieldTouchEvent>().MoveUP();
                 }
+                this.gameObject.transform.SetParent(null);
                 repositionPlayersFieldStarted = true;
             }
             if(Mathf.Abs(transform.localPosition.x - posToMove.x) <= 40f)
             {
-                playersFields.DeletePlayer(index);
+                playersFields.DeletePlayer(this.transform);
                 repositionPlayersFieldStarted = false;
                 transform.localPosition = posToMove;
                 swipeState = SwipeState.NO_MOVEMENT;
@@ -50,9 +58,11 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
         }
         else if (swipeState == SwipeState.BACK_TO_ORGINAL_POS)
         {
+            Debug.Log("Back t oOrginal Pos");
             transform.localPosition = Vector3.Lerp(transform.localPosition, posToMove, 3f * Time.deltaTime);
             if (Mathf.Abs(transform.localPosition.x - posToMove.x) <= 0.015f)
             {
+                Debug.Log("Back t oOrginal Pos end");
                 transform.localPosition = posToMove;
                 swipeState = SwipeState.NO_MOVEMENT;
             }
@@ -67,6 +77,15 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
             }
         }
 	}
+
+
+    public void moveNewPlayer()
+    {
+        swipeState = SwipeState.BACK_TO_ORGINAL_POS;
+        this.posToMove = transform.localPosition;
+        posToMove.x = 0f;
+        Debug.Log("End move new Player pos: " + this.posToMove);
+    }
 
     int findIndexOfGameObject()
     {
@@ -86,7 +105,14 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
 
     public void MoveUP()
     {
-        posToMove = new Vector3(transform.localPosition.x, transform.localPosition.y + playersFields.spaceBetweenFields, 0f);
+        if(swipeState == SwipeState.MOVE_UP || swipeState == SwipeState.BACK_TO_ORGINAL_POS)
+        {
+            posToMove = new Vector3(0f, posToMove.y + playersFields.spaceBetweenFields, 0f);
+        }
+        else
+        {
+            posToMove = new Vector3(0f, transform.localPosition.y + playersFields.spaceBetweenFields, 0f);
+        }
         swipeState = SwipeState.MOVE_UP;
     }
 
@@ -96,7 +122,7 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
         swipeTime = 0.0f;
         swipeStartX = Input.mousePosition.x;
         swipeEndX = 0.0f;
-        swipeState = SwipeState.NO_MOVEMENT;
+        //swipeState = SwipeState.NO_MOVEMENT;
         Debug.Log("BEGIN DRAG");
     }
 
@@ -116,22 +142,29 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
         {
             swipeEndX = transform.localPosition.x;
             Debug.Log("Swipe End X" + swipeEndX);
-            if(swipeEndX > 210)
+            if (swipeEndX > swipeOutPositionTrigger)
             {
                 posToMove = new Vector3(640, transform.localPosition.y, transform.localPosition.z);
                 Debug.Log("Right");
                 swipeState = SwipeState.MOVE;
-            } else if(swipeEndX < -210)
+            } else if(swipeEndX < -swipeOutPositionTrigger)
             {
                 Debug.Log("LEFT");
                 posToMove = new Vector3(-640, transform.localPosition.y, transform.localPosition.z);
                 swipeState = SwipeState.MOVE;
             } else
             {
-                posToMove = new Vector3(0, transform.localPosition.y, transform.localPosition.z);
+                if(swipeState == SwipeState.MOVE_UP)
+                {
+                    Debug.Log("Back to orgin pos - change only X");
+                    posToMove.x = 0;
+                }else
+                {
+                    posToMove = new Vector3(0, transform.localPosition.y, transform.localPosition.z);
+                    Debug.Log("Back to orgin pos - change all");
+                }
                 swipeState = SwipeState.BACK_TO_ORGINAL_POS;
             }
-            Debug.Log("Drag Time " + swipeTime * Mathf.Abs(swipeEndX - swipeStartX));
             Debug.Log("DRAG END");
         }
     }
