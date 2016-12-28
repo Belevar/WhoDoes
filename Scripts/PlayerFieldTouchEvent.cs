@@ -14,13 +14,14 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
 
     SwipeState swipeState;
     Vector3 posToMove;
+    Transform parentObject;
 
     bool repositionPlayersFieldStarted = false;
-    int index = -1;
+    int indexInChildHierarchy = -1;
 
     void Awake()
     {
-        Debug.Log("DUUUPA");
+        parentObject = transform.parent;
         swipeState = SwipeState.NO_MOVEMENT;
         if (playersFields == null)
         {
@@ -40,12 +41,12 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
             transform.localPosition = Vector3.Lerp(transform.localPosition, posToMove, 3f * Time.deltaTime);
             if(!repositionPlayersFieldStarted)
             {
-                index = findIndexOfGameObject();
-                for (int i = index + 1; i < transform.parent.childCount; i++)
+              //  indexInChildHierarchy = findIndexOfGameObject();
+                for (int i = indexInChildHierarchy ; i < parentObject.childCount; i++) 
                 {
-                    transform.parent.GetChild(i).GetComponent<PlayerFieldTouchEvent>().MoveUP();
+                    parentObject.GetChild(i).GetComponent<PlayerFieldTouchEvent>().MoveUP();
                 }
-                this.gameObject.transform.SetParent(null);
+                //this.gameObject.transform.SetParent(null);
                 repositionPlayersFieldStarted = true;
             }
             if(Mathf.Abs(transform.localPosition.x - posToMove.x) <= 40f)
@@ -147,11 +148,15 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
                 posToMove = new Vector3(640, transform.localPosition.y, transform.localPosition.z);
                 Debug.Log("Right");
                 swipeState = SwipeState.MOVE;
+                indexInChildHierarchy = findIndexOfGameObject();
+                this.gameObject.transform.SetParent(null);
             } else if(swipeEndX < -swipeOutPositionTrigger)
             {
                 Debug.Log("LEFT");
                 posToMove = new Vector3(-640, transform.localPosition.y, transform.localPosition.z);
                 swipeState = SwipeState.MOVE;
+                indexInChildHierarchy = findIndexOfGameObject();
+                this.gameObject.transform.SetParent(null);
             } else
             {
                 if(swipeState == SwipeState.MOVE_UP)

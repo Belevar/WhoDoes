@@ -42,19 +42,12 @@ public class PlayersFields : MonoBehaviour {
 
     public GameObject AddNewPlayer(string playerName, string sex)
     {
-        Transform button = addPlayerButton.transform;
-        //Transform lastPlayerField = playersPlaceholder.GetChild(playersPlaceholder.childCount - 1);
-        //Vector3 newFieldPosition = lastPlayerField.position;
-
         Transform lastPlayerField = playersPlaceholder.GetChild(0);
         Vector3 newFieldPosition = lastPlayerField.position;
 
-        float playersFieldOffset = transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
-        playersFieldOffset *= playersPlaceholder.childCount;
-
+        float playersFieldOffset = spaceBetweenFields *  playersPlaceholder.childCount;
+        Debug.Log("Players field offset: " + playersFieldOffset + " - Child count:" + playersPlaceholder.childCount);
         newFieldPosition.y -= playersFieldOffset;
-        //newFieldPosition.y -= transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
-        //newFieldPosition.y *= playersPlaceholder.childCount;
        
         //For swipe in animation if player is created from button;
         if(playerName.Equals("") && sex.Equals(""))
@@ -76,11 +69,9 @@ public class PlayersFields : MonoBehaviour {
         }
 
         newFieldPosition.x = 0;
-        Debug.Log("New pos before method" + newFieldPosition);
-       // newField.GetComponent<PlayerFieldTouchEvent>().moveNewPlayer();
         if (playersPlaceholder.childCount >= 6)
         {
-            button.gameObject.SetActive(false);
+            addPlayerButton.SetActive(false);
         }
         return newField;
     }
