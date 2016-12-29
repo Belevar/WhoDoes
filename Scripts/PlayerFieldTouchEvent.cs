@@ -108,11 +108,11 @@ public class PlayerFieldTouchEvent : MonoBehaviour, IBeginDragHandler, IEndDragH
     {
         if(swipeState == SwipeState.MOVE_UP || swipeState == SwipeState.BACK_TO_ORGINAL_POS)
         {
-            posToMove = new Vector3(0f, posToMove.y + playersFields.spaceBetweenFields, 0f);
+            posToMove = new Vector3(0f, posToMove.y + playersFields.moveUpSHIT, 0f);
         }
         else
         {
-            posToMove = new Vector3(0f, transform.localPosition.y + playersFields.spaceBetweenFields, 0f);
+            posToMove = new Vector3(0f, transform.localPosition.y + playersFields.moveUpSHIT, 0f);
         }
         swipeState = SwipeState.MOVE_UP;
     }

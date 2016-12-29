@@ -3,36 +3,42 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class PlayersFields : MonoBehaviour {
-    
+public class PlayersFields : MonoBehaviour
+{
+
     public GameObject playerField;
     public GameObject addPlayerButton;
     public Sprite womanSprite;
     public Transform playersPlaceholder;
     public float spaceBetweenFields = 100;
+    public float moveUpSHIT = 100;
 
     PlayersManager playersManager;
 
     void Awake()
     {
         playersManager = FindObjectOfType<PlayersManager>();
-        if(playersManager == null)
+        if (playersManager == null)
         {
             Debug.LogError("PLAYERS MANAGER NOT FOUND!");
         }
-        spaceBetweenFields = transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
-        Debug.Log("Start space " + spaceBetweenFields);
+        
+        //Debug.Log("Start space " + spaceBetweenFields);
     }
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
+        spaceBetweenFields = transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
         populatePlayersFields();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public void AddNewPlayerFromButton()
     {
@@ -45,23 +51,32 @@ public class PlayersFields : MonoBehaviour {
         Transform lastPlayerField = playersPlaceholder.GetChild(0);
         Vector3 newFieldPosition = lastPlayerField.position;
 
-        float playersFieldOffset = spaceBetweenFields *  playersPlaceholder.childCount;
+        //float playersFieldOffset = transform.GetChild(0).transform.position.y - transform.GetChild(1).transform.position.y;
+        //playersFieldOffset *= playersPlaceholder.childCount;
+        //newFieldPosition.y -= playersFieldOffset;
+        
+        
+        float playersFieldOffset = spaceBetweenFields * playersPlaceholder.childCount;
         Debug.Log("Players field offset: " + playersFieldOffset + " - Child count:" + playersPlaceholder.childCount);
         newFieldPosition.y -= playersFieldOffset;
-       
+
+
+        
+        
         //For swipe in animation if player is created from button;
-        if(playerName.Equals("") && sex.Equals(""))
+        if (playerName.Equals("") && sex.Equals(""))
         {
             newFieldPosition.x = -640 * 2;
         }
-      
+
         GameObject newField = Instantiate(playerField, newFieldPosition, Quaternion.identity, playersPlaceholder) as GameObject;
         if (playerName.Equals(""))
         {
             Text newPlayerName = newField.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
             newPlayerName.text = "Player" + playersPlaceholder.childCount.ToString();
-            
-        } else
+
+        }
+        else
         {
             Text newPlayerName = newField.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
             newPlayerName.text = playerName;
@@ -69,9 +84,10 @@ public class PlayersFields : MonoBehaviour {
         }
 
         newFieldPosition.x = 0;
+        Debug.Log("New pos before method" + newFieldPosition);
         if (playersPlaceholder.childCount >= 6)
         {
-            addPlayerButton.SetActive(false);
+            addPlayerButton.gameObject.SetActive(false);
         }
         return newField;
     }
@@ -88,7 +104,7 @@ public class PlayersFields : MonoBehaviour {
 
     public void DeletePlayer(int index)
     {
-        if(playersPlaceholder.childCount > 2)
+        if (playersPlaceholder.childCount > 2)
         {
             Destroy(playersPlaceholder.GetChild(index).gameObject);
             addPlayerButton.SetActive(true);
@@ -103,11 +119,11 @@ public class PlayersFields : MonoBehaviour {
             addPlayerButton.SetActive(true);
         }
     }
-    
+
     void populatePlayersFields()
     {
         List<Player> players = playersManager.GetPlayers();
-        
+
         if (players.Count > 0)
         {
             int i = 0;
@@ -124,7 +140,7 @@ public class PlayersFields : MonoBehaviour {
                 int numberOfFieldsToAdd = players.Count - defaultPlayersNum;
                 for (i = 0; i < numberOfFieldsToAdd; i++)
                 {
-                    AddNewPlayer(players[i + 2].playerName, players[i+2].sex);
+                    AddNewPlayer(players[i + 2].playerName, players[i + 2].sex);
                 }
             }
         }
