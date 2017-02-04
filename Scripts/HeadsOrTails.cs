@@ -2,8 +2,10 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class HeadsOrTails : MonoBehaviour {
+public class HeadsOrTails : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
+{
 
     private Sprite tails;
 
@@ -118,8 +120,8 @@ public class HeadsOrTails : MonoBehaviour {
                 {
                     Debug.Log("Current spin =" + currentSpin);
                     Debug.Log("Current spin / 360 =" +  currentSpin / 360);
-                    //speed = rotateSpeed - currentSpin / 360;
-                    speed = 1;
+                    speed = rotateSpeed - currentSpin / 360;
+                    //speed = 1;
                     Debug.Log("ROTATE SPEED" + rotateSpeed);
                 }
                 currentSpin += speed;
@@ -153,7 +155,7 @@ public class HeadsOrTails : MonoBehaviour {
         }
         else
         {
-            swipeFingerOnScreen();
+            //swipeFingerOnScreen();
         }
 
 	}
@@ -206,6 +208,7 @@ public class HeadsOrTails : MonoBehaviour {
             coinSideWasChanged = true;
         }
     }
+
     void changeCoinSides()
     {
         if (areHeads)
@@ -220,11 +223,6 @@ public class HeadsOrTails : MonoBehaviour {
             areHeads = true;
             GetComponent<Image>().sprite = heads;
         }
-    }
-
-    void spinCoin()
-    {
-
     }
 
     void assignPlayers()
@@ -307,5 +305,49 @@ public class HeadsOrTails : MonoBehaviour {
             swipeTime = 0f;
         }
         
+    }
+
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        swipeTime = 0.0f;
+        startpos = Input.mousePosition;
+        endpos = Vector2.zero;
+        Debug.Log("BEGIN DRAG");
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        swipeTime += Time.deltaTime;
+        Debug.Log("DRAG IN PROGRESS");
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        wasThrown = true;
+        shouldSpinn = true;
+        endpos = Input.mousePosition;
+        final = endpos - startpos;
+        if (startpos.y < endpos.y)
+        {
+            throwDirection = Vector3.up;
+            Debug.Log("SWIPE UP");
+        }
+        else
+        {
+            throwDirection = Vector3.down;
+            Debug.Log("SWIPE DOWN");
+        }
+        length = final.magnitude;
+        spinnBootleTime = swipeTime * length;
+        if (spinnBootleTime > 15)
+        {
+            spinnBootleTime = 15;
+        }
+        degreesToSpin = (int)spinnBootleTime * 180 * 3;
+        Debug.Log(spinnBootleTime);
+        rotateSpeed = degreesToSpin / 360 + 2;
+        swipeTime = 0f;
+            Debug.Log("DRAG END");
     }
 }

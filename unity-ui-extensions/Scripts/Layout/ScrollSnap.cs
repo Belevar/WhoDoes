@@ -372,7 +372,7 @@ namespace UnityEngine.UI.Extensions
         public void NextScreen()
         {
             UpdateListItemPositions();
-
+            Debug.Log("PAGES : " + pages);
             if (CurrentPage() < pages - 1)
             {
                 lerp = true;
@@ -397,7 +397,7 @@ namespace UnityEngine.UI.Extensions
         }
 
         //Because the CurrentScreen function is not so reliable, these are the functions used for swipes
-        private void NextScreenCommand()
+        public void NextScreenCommand()
         {
             if (pageOnDragStart < pages - 1)
             {
@@ -411,7 +411,7 @@ namespace UnityEngine.UI.Extensions
         }
 
         //Because the CurrentScreen function is not so reliable, these are the functions used for swipes
-        private void PrevScreenCommand()
+        public void PrevScreenCommand()
         {
             if (pageOnDragStart > 0)
             {

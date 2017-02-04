@@ -5,6 +5,7 @@ public class Baloon : MonoBehaviour {
 
 
     Baloons gameController;
+    public int pointValue = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +20,7 @@ public class Baloon : MonoBehaviour {
 
     void OnMouseDown()
     {
-        gameController.AddPointForPlayer();
+        gameController.AddPointForPlayer(pointValue);
         Destroy(gameObject);
     }
 }

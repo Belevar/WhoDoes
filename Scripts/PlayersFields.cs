@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 public class PlayersFields : MonoBehaviour
 {
-
     public GameObject playerField;
     public GameObject addPlayerButton;
     public Sprite womanSprite;
     public Transform playersPlaceholder;
     public float spaceBetweenFields = 100;
     public float moveUpSHIT = 100;
+    public GameObject[] tips; 
 
     PlayersManager playersManager;
 
@@ -37,7 +37,6 @@ public class PlayersFields : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
     }
 
     public void AddNewPlayerFromButton()
@@ -55,14 +54,10 @@ public class PlayersFields : MonoBehaviour
         //playersFieldOffset *= playersPlaceholder.childCount;
         //newFieldPosition.y -= playersFieldOffset;
         
-        
         float playersFieldOffset = spaceBetweenFields * playersPlaceholder.childCount;
         Debug.Log("Players field offset: " + playersFieldOffset + " - Child count:" + playersPlaceholder.childCount);
         newFieldPosition.y -= playersFieldOffset;
 
-
-        
-        
         //For swipe in animation if player is created from button;
         if (playerName.Equals("") && sex.Equals(""))
         {
@@ -92,6 +87,7 @@ public class PlayersFields : MonoBehaviour
         return newField;
     }
 
+    #region deletePlayers
     public void DeletePlayer()
     {
         if (playersPlaceholder.childCount > 2)
@@ -120,6 +116,8 @@ public class PlayersFields : MonoBehaviour
         }
     }
 
+    #endregion
+
     void populatePlayersFields()
     {
         List<Player> players = playersManager.GetPlayers();
@@ -146,4 +144,13 @@ public class PlayersFields : MonoBehaviour
         }
     }
 
+    public void hideFirstInfoBubble()
+    {
+        tips[0].SetActive(false);
+    }
+
+    public void hideSecondInfoBubble()
+    {
+        tips[1].SetActive(false);
+    }
 }

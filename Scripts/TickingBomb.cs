@@ -20,7 +20,7 @@ public class TickingBomb : MonoBehaviour {
         bombGraphic = transform.GetChild(0).gameObject;
         timeTillExplosion = Random.Range(1, players);
         timeTillExplosion *= timeMultiplayer;
-        Debug.Log("Time till Explosion " + timeTillExplosion);
+       // Debug.Log("Time till Explosion " + timeTillExplosion);
     }
 	
 	// Update is called once per frame
@@ -31,7 +31,7 @@ public class TickingBomb : MonoBehaviour {
             if(timePassed < timeTillExplosion)
             {
                 timePassed += Time.deltaTime;
-                Debug.Log(timePassed);
+               // Debug.Log(timePassed);
             }else
             {
                 endGame = true;
